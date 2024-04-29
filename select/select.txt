@@ -1,0 +1,23 @@
+//select用得比较少了，大多数用epoll，仅作了解
+int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout);
+nfds：监视的文件描述符集中最大描述符值加1。
+readfds：一个指向 fd_set 结构的指针，其中包含你要监视可读性的文件描述符的集合。
+writefds：一个指向 fd_set 结构的指针，其中包含你要监视可写性的文件描述符的集合。
+exceptfds：一个指向 fd_set 结构的指针，其中包含你要监视异常情况的文件描述符的集合。
+timeout：一个指向 timeval 结构的指针，用于指定 select 函数的超时时间。如果为 NULL，select 将一直阻塞直到有文件描述符准备好或者出现错误。
+
+数据结构：
+fd_set 在底层通常是一个位图（bit array）或者一个数组，用于标记文件描述符的状态。每个文件描述符在 fd_set 中的位置上，对应一个特定的位或者数组元素。
+
+宏操作：
+使用一组宏来操作 fd_set 结构：
+
+FD_ZERO(fd_set *set)：清空指定的 fd_set，将其所有位设置为 0。
+FD_SET(int fd, fd_set *set)：将指定的文件描述符 fd 加入到 fd_set 中，将对应的位设置为 1。
+FD_CLR(int fd, fd_set *set)：从 fd_set 中移除指定的文件描述符 fd，将对应的位设置为 0。
+FD_ISSET(int fd, fd_set *set)：检查指定的文件描述符 fd 是否在 fd_set 中，如果对应的位被设置为 1，则返回非零值，否则返回 0。
+大小限制：
+fd_set 的大小通常是固定的，取决于操作系统和编译器。通常情况下，一个 fd_set 结构可以表示的最大文件描述符数量由 FD_SETSIZE 宏定义。
+
+用途：
+主要用于在 I/O 多路复用函数中指定要监视的文件描述符。例如，在调用 select 函数之前，你需要将需要监视的文件描述符添加到对应的 fd_set 中，然后将这些 fd_set 作为参数传递给 select 函数。
